@@ -17,10 +17,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    
+    protected $table ="Usuarios";
     protected $fillable = [
-        'name',
+        'nombre',
         'email',
-        'password',
+        'tipo',
+        'estado'
     ];
 
     /**
@@ -29,7 +32,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+        'contrasena',
         'remember_token',
     ];
 
@@ -41,4 +44,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function condomino(){
+        return $this->hasOne('App\Models\Condomino');
+    }
 }
