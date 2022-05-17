@@ -77,12 +77,7 @@ class FondoController extends Controller
 
       //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
-        
-        //$nombreVarible ->> Crear variable
-        //Si solo quiere la categoria ->> Condomino::find($id)
-        //Si quiere todos post que estan relaciondos a esa categoria ->> Category::find($id)->load('post');
-        $data = FondoCondominal::find($id);//-------------------------------------------------------------ver esto-------------->>>
-       // var_dump($data->user);
+        $data = FondoCondominal::find($id);
         // si viene vacio no se encontro
         if (is_object($data)) {
             $response=array(

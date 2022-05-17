@@ -103,7 +103,6 @@ class ProductoController extends Controller
         //var_dump($data);
         if (!empty($data)) {
             $data = array_map('trim',$data);
-            //VER SI ID VA IGUAL O CON OTRO NAME--------------------------------------------------------------------------------------->>>>
             $rules=[
                 'proveedor'=> 'required',
                 'nombre'=> 'required',
@@ -125,7 +124,6 @@ class ProductoController extends Controller
                 $id = $data['id'];
                 unset($data['id']);//quitar el elemento id del data
                 unset($data['created_at']);//este tambien, esto se da porque son datos que no queremos modificar
-                //VER ID SI ES ASI O CAMBIAR NAME ---------------------------------------------------------------------------------------->>
                 $updated = Producto::where('id',$id)->update($data); //hace una busqueda comparando los dos parametros id y $id
                 if ($updated>0) {
                     $response = array(
@@ -155,7 +153,6 @@ class ProductoController extends Controller
      //destroy -> Elimina un elemento << DELETE >>
      public function destroy($id){
         if (isset($id)) {//si la variable esta creada
-            //VER ID SI ES ASI O CAMBIAR NAME ------------------------------------------------------->>
             $deleted = Producto::where('id',$id)->delete();
             if ($deleted) {
                 $response = array(

@@ -105,10 +105,6 @@ class FacturaProveedorController extends Controller
         
         $json = $request->input('json',null);
         $data = json_decode($json,true);
-
-      
-
-
         //var_dump($data);
         if (!empty($data)) {
             $data = array_map('trim',$data);

@@ -28,10 +28,7 @@ class CondominoController extends Controller
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
         
-        //$nombreVarible ->> Crear variable
-        //Si solo quiere la categoria ->> Condomino::find($id)
-        //Si quiere todos post que estan relaciondos a esa categoria ->> Category::find($id)->load('post');
-        $data = Condomino::find($id);//-------------------------------------------------------------ver esto-------------->>>
+        $data = Condomino::find($id);
         $data->user = User::find($data->usuario);
        // var_dump($data->user);
         // si viene vacio no se encontro
@@ -105,7 +102,6 @@ class CondominoController extends Controller
         //var_dump($data);
         if (!empty($data)) {
             $data = array_map('trim',$data);
-            //VER SI ID VA IGUAL O CON OTRO NAME--------------------------------------------------------------------------------------->>>>
             $rules = [
                 'propietario'=>'required|alpha',
                 'numFilial'=> 'required'
@@ -127,7 +123,6 @@ class CondominoController extends Controller
                 unset($data['id']);//quitar el elemento id del data
                 unset($data['usuario']);
                 unset($data['created_at']);//este tambien, esto se da porque son datos que no queremos modificar
-                //VER ID SI ES ASI O CAMBIAR NAME ---------------------------------------------------------------------------------------->>
                 $updated =Condomino::where('id',$id)->update($data); //hace una busqueda comparando los dos parametros id y $id
                 if ($updated>0) {
                     $response = array(

@@ -48,7 +48,7 @@ class CuotaController extends Controller
         $json = $request->input('json',null);//obj json que viene de la vista(frontend) o nulo
         $data = json_decode($json,true);
         if (!empty($data)) {
-            $data = array_map('trim',$data);//trin: quitar cualquier campo vacio que viene en ese arreglo
+            $data = array_map('trim',$data);//trim: quitar cualquier campo vacio que viene en ese arreglo
             //alpha: que solo sea letras
             $rules=[
                 'periodo'=> 'required|date',
@@ -100,13 +100,8 @@ class CuotaController extends Controller
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
         
-        //$nombreVarible ->> Crear variable
-        //Si solo quiere la categoria ->> Condomino::find($id)
-        //Si quiere todos post que estan relaciondos a esa categoria ->> Category::find($id)->load('post');
-        $data = Cuota::find($id);//-------------------------------------------------------------ver esto-------------->>>
+        $data = Cuota::find($id);
         $data->condomino = Condomino::find($data->condomino);// cambia id por el arreglo relacionado a ese id
-       // var_dump($data->user);
-        // si viene vacio no se encontro
         if (is_object($data)) {
             $response=array(
                 'status'=> 'success',
@@ -174,7 +169,6 @@ class CuotaController extends Controller
     //destroy -> Elimina un elemento << DELETE >>
     public function destroy($id){
         if (isset($id)) {//si la variable esta creada
-            //VER ID SI ES ASI O CAMBIAR NAME ------------------------------------------------------->>
             $deleted = Cuota::where('id',$id)->delete();
             if ($deleted) {
                 $response = array(

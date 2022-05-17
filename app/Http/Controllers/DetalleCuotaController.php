@@ -27,13 +27,7 @@ class DetalleCuotaController extends Controller
 
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
-        
-        //$nombreVarible ->> Crear variable
-        //Si solo quiere la categoria ->> Condomino::find($id)
-        //Si quiere todos post que estan relaciondos a esa categoria ->> Category::find($id)->load('post');
-        $data = DetalleCuota::find($id);//-------------------------------------------------------------ver esto-------------->>>
-       // var_dump($data->user);
-        // si viene vacio no se encontro
+        $data = DetalleCuota::find($id);
         if (is_object($data)) {
             $response=array(
                 'status'=> 'success',
@@ -111,7 +105,6 @@ class DetalleCuotaController extends Controller
         //var_dump($data);
         if (!empty($data)) {
             $data = array_map('trim',$data);
-            //VER SI ID VA IGUAL O CON OTRO NAME--------------------------------------------------------------------------------------->>>>
             $rules = [
                 'monto'=> 'required'
             ];
@@ -159,7 +152,6 @@ class DetalleCuotaController extends Controller
      //destroy -> Elimina un elemento << DELETE >>
      public function destroy($id){
         if (isset($id)) {//si la variable esta creada
-            //VER ID SI ES ASI O CAMBIAR NAME ------------------------------------------------------->>
             $deleted = DetalleCuota::where('id',$id)->delete();
             if ($deleted) {
                 $response = array(
