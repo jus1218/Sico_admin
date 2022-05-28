@@ -8,6 +8,10 @@ use App\Http\Controllers\DetalleCuotaController;
 use App\Http\Controllers\FondoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\FacturaProveedorController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\DetallePagoController;
+use App\Http\Controllers\PagoController;
+use App\Http\Controllers\ColaboradorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,6 +29,8 @@ Route::prefix('api')->group( function () {
     //Route::post('/user/upload', [UserController::class,'uploadImage']);
     //Route::get('/user/getimage/{filename}',[UserController::class,'getImage']);
     //Route::put('/user/update',[UserController::class,'update']);
+    Route::post('/user/login',[UserController::class,'login']);
+    Route::get('/user/getidentity',[UserController::class,'getIdentity']);
     //RUTAS AUTOMATICAS RESTful
     Route::resource('/user', UserController::class,['except'=>['create','edit']]);
     Route::resource('/condomino', CondominoController::class,['except'=>['create','edit']]);
@@ -33,5 +39,9 @@ Route::prefix('api')->group( function () {
     Route::resource('/fondocondominal', FondoController::class,['except'=>['create','edit']]);
     Route::resource('/producto', ProductoController::class,['except'=>['create','edit']]);
     Route::resource('/facturaproveedor',FacturaProveedorController::class,['except'=>['create','edit']]);
+    Route::resource('/proveedor',ProveedorController::class,['except'=>['create','edit']]);
+    Route::resource('/detallepago', DetallePagoController::class,['except'=>['create','edit']]);
+    Route::resource('/pago', PagoController::class,['except'=>['create','edit']]);
+    Route::resource('/colaborador', ColaboradorController::class,['except'=>['create','edit']]);
     //return view('welcome');
 });

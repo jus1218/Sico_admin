@@ -11,9 +11,13 @@ class Condomino extends Model
     protected $table = 'Condominos';
     protected $fillable =['propietario','numFilial','usuario'];
 
-    public function user(){//Manana
-        return $this->hasOne('App\Models\User','idUsuarios');
+  
+
+    
+    public function usuario(){
+        return $this->belongsTo('App\Models\User','usuario');
     }
+
     public function cuota(){
         return $this->hasMany('App\Models\Cuota');
     }

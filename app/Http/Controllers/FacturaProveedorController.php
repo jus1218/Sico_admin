@@ -16,21 +16,32 @@ class FacturaProveedorController extends Controller
 
     public function index(){
         var_dump("Mostrar todo");
-        $data = FacturaProveedor::all();//Devuelve todos los obj de la DB
-        
+
+        //$data = FacturaProveedor::with(['producto','fondoCondominal'])->get();//Devuelve todos los obj de la DB
+        $data = FacturaProveedor::all()->load('producto','fondoCondominal');
         $response = array(
             'status'=>'sucess',
             'code' => 200,
             'data' => $data
         );
+
+        if (!count($data)) {//Verifica si el array viene vacio
+            $response = array(
+                'status'=>'error',
+                'code' => 400,
+                'data' => "Recursos no encontrados"
+            );
+        }
         return response()->json($response,200);
     }
 
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
         
+        //$data = FacturaProveedor::with(['producto','fondoCondominal'])->get()->find($id);
         $data = FacturaProveedor::find($id);
         if (is_object($data)) {
+            $data->load('producto','fondoCondominal');
             $response=array(
                 'status'=> 'success',
                 'code'=> 200,
@@ -81,12 +92,21 @@ class FacturaProveedorController extends Controller
                 $detCuota->cantidad = $data['cantidad'];
                 $detCuota->total = $data['precioUni'] * $data['cantidad'];
 
-                $detCuota->save(); //Guarda en la BD
-                $response = array(
+                try {
+                   $detCuota->save(); //Guarda en la BD
+                    $response = array(
                     'status'=>'success',
                     'code'=>201,
                     'menssage'=>'Datos almacenados satisfactoriamente'
-                );
+                    ); 
+                } catch (\Throwable $th) {
+                    $response = array(
+                        'status'=>'error',
+                        'code'=>406,
+                        'menssage'=>'producto o fondo no registrados'
+                    );
+                }
+                
             }
         }else {
             $response = array(

@@ -16,19 +16,33 @@ class DetalleCuotaController extends Controller
     //index -> Devolver todos los elementos << GET >>
     public function index(){
         var_dump("Mostrar todo");
-        $data=DetalleCuota::all();//Devuelve todos los obj
+        //$data=DetalleCuota::with(['cuota','fondoCondominal'])->get();//Devuelve todos los obj
+        $data = DetalleCuota::all()->load('cuota','fondoCondominal');
         $response = array(
             'status'=>'sucess',
             'code' => 200,
             'data' => $data
         );
+
+        if (!count($data)) {//Verifica si el array viene vacio
+            $response = array(
+                'status'=>'error',
+                'code' => 400,
+                'data' => "Recursos no encontrados"
+            );
+        }
         return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
 
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
+        //$data=DetalleCuota::with(['cuota','fondoCondominal'])->get()->find($id);
         $data = DetalleCuota::find($id);
         if (is_object($data)) {
+            $data->load('cuota','fondoCondominal');
+
+            //$data['fondoCondominal'] = $data['fondo_condominal'];
+            //unset($data['fondo_condominal']);
             $response=array(
                 'status'=> 'success',
                 'code'=> 200,
@@ -77,13 +91,22 @@ class DetalleCuotaController extends Controller
                 $detCuota->fondoCondominal = $data['fondoCondominal'];
                 $detCuota->monto = $data['monto'];
                 
-                $detCuota->save(); //Guarda en la BD
-                var_dump('Holaaaaa');
-                $response = array(
+
+                try {
+                    $detCuota->save(); //Guarda en la BD
+                    $response = array(
                     'status'=>'success',
                     'code'=>201,
                     'menssage'=>'Datos almacenados satisfactoriamente'
                 );
+                } catch (\Throwable $th) {
+                    $response = array(
+                        'status'=>'error',
+                        'code'=>406,
+                        'menssage'=>'cuota o fondo no registrados'
+                    );
+                }
+                
             }
         }else {
             $response = array(

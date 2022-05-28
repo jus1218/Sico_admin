@@ -14,32 +14,32 @@ class CuotaController extends Controller
 {
     //
 
-    public $idCuota;
+ 
     public function __construct(){
 
 
     }
 
-   
-
-    public function setCuotaId($id){
-        $idCuota= $id;
-        return $idCuota;
-    }
-
-    public function getCuotaId(){
-        return $this->idCuota;
-    }
 
     //index -> Devolver todos los elementos << GET >>
     public function index(){
         var_dump("Mostrar todo");
-        $data=Condomino::all();//Devuelve todos los obj
+       // $data = Cuota::with('condomino')->get();//Es mejor que el all() porque te trae las relaciones
+       $data = Cuota::all()->load('condomino');
         $response = array(
             'status'=>'sucess',
             'code' => 200,
             'data' => $data
         );
+
+        if (!count($data)) {//Verifica si el array viene vacio
+            $response = array(
+                'status'=>'error',
+                'code' => 400,
+                'data' => "Recursos no encontrados"
+            );
+        }
+
         return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
 
@@ -50,13 +50,12 @@ class CuotaController extends Controller
         if (!empty($data)) {
             $data = array_map('trim',$data);//trim: quitar cualquier campo vacio que viene en ese arreglo
             //alpha: que solo sea letras
-            $rules=[
+            
+            $validate =\validator($data,[
                 'periodo'=> 'required|date',
                 'monto'=> 'required',
                 'condomino'=> 'required',
-            ];
-            
-            $validate =\validator($data,$rules);
+            ]);
             
             if ($validate->fails()) {//fails: envia booleano
                 $response = array(
@@ -66,24 +65,23 @@ class CuotaController extends Controller
                     'errors'=>$validate->errors()
                 );
             }else {    
-                /*
-                    $cuota = new Cuota();
-                    $cuota->periodo = $data['periodo'];
-                    $cuota->monto = $data['monto'];
-                    $cuota->condomino = $data['condomino'];
-                    $cuota->save(); //Guarda en la BD
-                */
 
-                $cuota = Cuota::create($data);
-
-                //var_dump($cuota->id);
-
-                $response = array(
+                try {
+                    $cuota = Cuota::create($data);
+                    $response = array(
                     'status'=>'success',
                     'code'=>201,
                     'menssage'=>'Datos almacenados satisfactoriamente',
                     'ObjId' => $cuota->id
                 );
+                } catch (\Throwable $th) {
+                    $response = array(
+                        'status'=>'error',
+                        'code'=>406,
+                        'menssage'=>'Condomino no registrado'
+                    );
+                }
+                
             }
         }else {
             $response = array(
@@ -100,9 +98,16 @@ class CuotaController extends Controller
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
         
+        // $data = Cuota::find($id);
+        //$data->condomino = Condomino::find($data->condomino);// cambia id por el arreglo relacionado a ese id
+
+        //$data = Cuota::with('condomino')->get()->find($id);
+        //$data = Cuota::all()->load('condomino');
         $data = Cuota::find($id);
-        $data->condomino = Condomino::find($data->condomino);// cambia id por el arreglo relacionado a ese id
+
         if (is_object($data)) {
+
+            $data->load('condomino');
             $response=array(
                 'status'=> 'success',
                 'code'=> 200,
@@ -124,7 +129,7 @@ class CuotaController extends Controller
         $json = $request->input('json',null);
         $data = json_decode($json,true);
         //error al solucionar
-        var_dump($data);
+        //var_dump($data);
 
         $data = array_map('trim',$data);
         $rules=[

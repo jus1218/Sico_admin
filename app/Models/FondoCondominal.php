@@ -9,10 +9,10 @@ class FondoCondominal extends Model
 {
     use HasFactory;
     protected $table = 'FondoCondominal';
-    protected $fillable = ['tipoTransaccion','monto'];
+    protected $fillable = ['monto'];
 
     public function detalleCuota(){
-        return $this->hasMany('App\Models\DetalleCuotas');
+        return $this->hasMany('App\Models\DetalleCuota');
     }
     public function detallePago(){
         return $this->hasMany('App\Models\DetallePago');

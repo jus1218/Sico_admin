@@ -21,6 +21,14 @@ class FondoController extends Controller
             'code' => 200,
             'data' => $data
         );
+
+        if (!count($data)) {//Verifica si el array viene vacio
+            $response = array(
+                'status'=>'error',
+                'code' => 400,
+                'data' => "Recursos no encontrados"
+            );
+        }
         return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
 
@@ -33,8 +41,7 @@ class FondoController extends Controller
             $data = array_map('trim',$data);//trin: quitar cualquier campo vacio que viene en ese arreglo
             //alpha: que solo sea letras
             $rules=[
-                'tipoTransaccion'=> 'required',
-                'monto'=> 'required',
+                'monto'=> 'required'
             ];
             
             $validate =\validator($data,$rules);
@@ -49,7 +56,7 @@ class FondoController extends Controller
             }else {    
                 
                 $fondo = new FondoCondominal();
-                $fondo->tipoTransaccion = $data['tipoTransaccion'];
+                
                 $fondo->monto = $data['monto'];
                 $fondo->save(); //Guarda en la BD
                 
@@ -102,7 +109,7 @@ class FondoController extends Controller
         $json = $request->input('json',null);
         $data = json_decode($json,true);
         //error al solucionar
-        var_dump($data);
+        //var_dump($data);
 
         $data = array_map('trim',$data);
         $rules=[

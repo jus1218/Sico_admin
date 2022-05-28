@@ -3,24 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-//
 use Illuminate\Http\Response;
-use App\Models\Condomino;
-use App\Models\User;
+use App\Models\DetallePago;
 
-class CondominoController extends Controller
+class DetallePagoController extends Controller
 {
     //
-    public function __consturct(){
-        //Inyectar meddlewar(Controla los accesos)
+
+
+    public function __construct(){
+
     }
-    //index -> Devolver todos los elementos << GET >>
+
+     //index -> Devolver todos los elementos << GET >>
     public function index(){
         var_dump("Mostrar todo");
-        //$data = Condomino::all();//Devuelve todos los obj
-        //$data = Condomino::with('usuario')->get();//Devuelve todos los obj
-        $data = Condomino::all()->load('usuario');
-        
+        //$data=DetallePago::with(['pago','fondoCondominal'])->get();//Devuelve todos los obj
+        $data = DetallePago::all()->load('pago','fondoCondominal');
         $response = array(
             'status'=>'sucess',
             'code' => 200,
@@ -34,24 +33,18 @@ class CondominoController extends Controller
                 'data' => "Recursos no encontrados"
             );
         }
-
         return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
-    //show -> Devuelve un elemento por su id << GET >>
+
+        //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
-        
-       // $data = Condomino::find($id);
-        $data = Condomino::find($id);
+        //$data=DetallePago::with(['pago','fondoCondominal'])->get()->find($id);
+        $data = DetallePago::find($id);
 
-        //$data = Condomino::with('usuario')->get()->find($id);
 
-       // var_dump($data->user);
-        // si viene vacio no se encontro
         if (is_object($data)) {
 
-            $data->load('usuario');
-            //$data->usuario = $data['user'];
-            //unset($data['user']);
+            $data = $data->load('pago','fondoCondominal');
             $response=array(
                 'status'=> 'success',
                 'code'=> 200,
@@ -66,20 +59,25 @@ class CondominoController extends Controller
         }
         return response()->json($response,$response['code']);
     }
+
+
     //store -> agrega o guarda un elemento << POST >>
     public function store(Request $request){
+        
         $json = $request->input('json',null);//obj json que viene de la vista(frontend) o nulo
         $data = json_decode($json,true);
         if (!empty($data)) {
             $data = array_map('trim',$data);//trin: quitar cualquier campo vacio que viene en ese arreglo
             //alpha: que solo sea letras
             $rules=[
-                'propietario'=> 'required',
-                'numFilial'=> 'required',
-                'usuario'=> 'required'
+                'pago'=> 'required',
+                'fondoCondominal'=> 'required',
+                'total'=>'required'
             ];
+
+           
             $validate =\validator($data,$rules);
-            
+           
             if ($validate->fails()) {//fails: envia booleano
                 $response = array(
                     'status'=>'error',
@@ -89,28 +87,27 @@ class CondominoController extends Controller
                 );
             }else {
                 
-                $condomino = new Condomino();
-               
-                $condomino->propietario = $data['propietario'];
-                $condomino->numFilial = $data['numFilial'];
-                $condomino->usuario = $data['usuario'];
-
+                $detPago = new DetallePago();
+            
+                $detPago->pago = $data['pago'];//AQUI ESTA EL GRAN PROBLEMA
+                $detPago->fondoCondominal = $data['fondoCondominal'];
+                $detPago->total = $data['total'];
+                
 
                 try {
-                    $condomino->save();
+                    $detPago->save(); //Guarda en la BD
                     $response = array(
-                        'status'=>'success',
-                        'code'=>201,
-                        'menssage'=>'Datos almacenados satisfactoriamente'
+                    'status'=>'success',
+                    'code'=>201,
+                    'menssage'=>'Datos almacenados satisfactoriamente'
                     );
                 } catch (\Throwable $th) {
                     $response = array(
                         'status'=>'error',
                         'code'=>406,
-                        'menssage'=>'Usuario no registrado'
+                        'menssage'=>'pago o fondo no registrados'
                     );
                 }
-
                 
             }
         }else {
@@ -124,7 +121,8 @@ class CondominoController extends Controller
         return response()->json($response,$response['code']);// retornamos el obj respuesta y el codigos = retorna 2 cosas la funcion
 
     }
-    //update -> modifica un elemento << PUT >>
+
+        //update -> modifica un elemento << PUT >>
     public function update(Request $request){
         
         $json = $request->input('json',null);
@@ -133,12 +131,10 @@ class CondominoController extends Controller
         if (!empty($data)) {
             $data = array_map('trim',$data);
             $rules = [
-                'propietario'=>'required|alpha',
-                'numFilial'=> 'required'
+                'total'=> 'required'
             ];
             
             $validate = \validator($data,$rules);//obj validator del sistema
-             var_dump("modificar");
             if ($validate->fails()) {
                 
                 $response = array(
@@ -151,9 +147,8 @@ class CondominoController extends Controller
              
                 $id = $data['id'];
                 unset($data['id']);//quitar el elemento id del data
-                unset($data['usuario']);
                 unset($data['created_at']);//este tambien, esto se da porque son datos que no queremos modificar
-                $updated =Condomino::where('id',$id)->update($data); //hace una busqueda comparando los dos parametros id y $id
+                $updated = DetallePago::where('id',$id)->update($data); //hace una busqueda comparando los dos parametros id y $id
                 if ($updated>0) {
                     $response = array(
                         'status'=>'success',
@@ -178,11 +173,11 @@ class CondominoController extends Controller
         }
         return response()->json($response,$response['code']);
     }
-    //destroy -> Elimina un elemento << DELETE >>
+
+         //destroy -> Elimina un elemento << DELETE >>
     public function destroy($id){
         if (isset($id)) {//si la variable esta creada
-            //VER ID SI ES ASI O CAMBIAR NAME ------------------------------------------------------->>
-            $deleted = Condomino::where('id',$id)->delete();
+            $deleted = DetallePago::where('id',$id)->delete();
             if ($deleted) {
                 $response = array(
                     'status'=>'success',
