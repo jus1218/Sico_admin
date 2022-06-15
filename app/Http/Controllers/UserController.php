@@ -33,7 +33,7 @@ class UserController extends Controller
                 'data' => "Recursos no encontrados"
             );
         }
-        return response()->json($response,200);
+        return response()->json($response,$response['code']);
     }
     //show -> Devuelve un elemento por su id << GET >>
     public function show($id){
@@ -220,6 +220,47 @@ class UserController extends Controller
             );
         }
         return response()->json($response);
+    }
+
+    // METODOS PARA LAS IMAGENES
+
+    public function uploadImage(Request $request){
+        $image=$request->file('file0');
+        $valid=\Validator::make($request->all(),[
+            'file0'=>'required|image|mimes:jpg,png'
+        ]);
+        if(!$image||$valid->fails()){
+            $response=array(
+                'status'=>'error',
+                'code'=>406,
+                'message'=>'Error al subir el archivo',
+                'errors'=>$valid->errors()
+            );
+        }else{
+            $filename=time().$image->getClientOriginalName();
+            \Storage::disk('users')->put($filename,\File::get($image));
+            $response=array(
+                'status'=>'success',
+                'code'=>200,
+                'message'=>'Imagen guardada correctamente',
+                'image_name'=>$filename
+            );
+        }
+        return response()->json($response,$response['code']);
+    }
+    public function getImage($filename){
+        $exist=\Storage::disk('users')->exists($filename);
+        if($exist){
+            $file=\Storage::disk('users')->get($filename);
+            return new Response($file,200);
+        }else{
+            $response=array(
+                'status'=>'error',
+                'code'=>404,
+                'message'=>'Imagen no existe'
+            );
+            return response()->json($response,404);
+        }
     }
 
 

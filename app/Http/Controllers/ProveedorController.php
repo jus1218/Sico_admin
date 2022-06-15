@@ -17,11 +17,10 @@ class ProveedorController extends Controller
 
     //index -> Devolver todos los elementos << GET >>
     public function index(){
-        var_dump("Mostrar todo");
         $data = Proveedor::all();//Es mejor que el all() porque te trae las relaciones
 
         $response = array(
-            'status'=>'sucess',
+            'status'=>'success',
             'code' => 200,
             'data' => $data
         );
@@ -33,7 +32,7 @@ class ProveedorController extends Controller
                 'data' => "Recursos no encontrados"
             );
         }
-        return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
+        return response()->json($response,$response['code']);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
 
         //show -> Devuelve un elemento por su id << GET >>

@@ -17,7 +17,7 @@ class FondoController extends Controller
     public function index(){
         $data=FondoCondominal::all();//Devuelve todos los obj
         $response = array(
-            'status'=>'sucess',
+            'status'=>'success',
             'code' => 200,
             'data' => $data
         );
@@ -110,42 +110,54 @@ class FondoController extends Controller
         $data = json_decode($json,true);
         //error al solucionar
         //var_dump($data);
-
-        $data = array_map('trim',$data);
-        $rules=[
-            'monto'=> 'required'
-        ];
-        $valid = \validator($data,$rules);
-        if ($valid->fails()) {
-            var_dump('ENTRO');
-            $response = array(
-                'status'=>'error',
-                'code'=>406,
-                'data'=>'Datos enviados no cumplen con las reglas establecidas',
-                'errors'=>$valid->errors()
-            );
-        }else {
-            
-            $id = $data['id'];//Busqueda por id
-            unset($data['created_at']);//ver escritura en los otros controllers
-            $fondo = FondoCondominal::find($id);
-            $data['monto'] += $fondo->monto;
-
-            $updated = FondoCondominal::where('id',$id)->update($data);
-            if ($updated>0) {
-                $response = array(
-                    'status'=>'success',
-                    'code'=>200,
-                    'data'=>'Datos actualizados satisfactoriamente'
-                );
-            }else {
+        //if (!empty($data)) {
+            $data = array_map('trim',$data);
+            $rules=[
+                'monto'=> 'required'
+            ];
+            $valid = \validator($data,$rules);
+            if ($valid->fails()) {
+                var_dump('ENTRO');
                 $response = array(
                     'status'=>'error',
-                    'code'=>400,
-                    'data'=>'No se pudo actualizar el elemento,puede ser que no exista'
+                    'code'=>406,
+                    'data'=>'Datos enviados no cumplen con las reglas establecidas',
+                    'errors'=>$valid->errors()
                 );
+            }else {
+                
+                $id = $data['id'];//Busqueda por id
+                unset($data['created_at']);//ver escritura en los otros controllers
+                $fondo = FondoCondominal::find($id);
+                //$data['monto'] += $fondo->monto;
+
+                $updated = FondoCondominal::where('id',$id)->update($data);
+                if ($updated>0) {
+                    $response = array(
+                        'status'=>'success',
+                        'code'=>200,
+                        'data'=>'Datos actualizados satisfactoriamente'
+                    );
+                }else {
+                    $response = array(
+                        'status'=>'error',
+                        'code'=>400,
+                        'data'=>'No se pudo actualizar el elemento,puede ser que no exista'
+                    );
+                }
             }
+     
+        /*
+           }else {
+            $response = array(
+                'status'=>'error',
+                'code'=>400,
+                'menssage'=>'Faltan parametros'
+            );
         }
+        
+        
+        */
         return response()->json($response,$response['code']);
     }
 

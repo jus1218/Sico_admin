@@ -96,7 +96,7 @@ class DetalleCuotaController extends Controller
                     $detCuota->save(); //Guarda en la BD
                     $response = array(
                     'status'=>'success',
-                    'code'=>201,
+                    'code'=>200,
                     'menssage'=>'Datos almacenados satisfactoriamente'
                 );
                 } catch (\Throwable $th) {

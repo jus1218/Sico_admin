@@ -16,13 +16,13 @@ class CondominoController extends Controller
     }
     //index -> Devolver todos los elementos << GET >>
     public function index(){
-        var_dump("Mostrar todo");
+        //var_dump("Mostrar todo");
         //$data = Condomino::all();//Devuelve todos los obj
         //$data = Condomino::with('usuario')->get();//Devuelve todos los obj
         $data = Condomino::all()->load('usuario');
         
         $response = array(
-            'status'=>'sucess',
+            'status'=>'success',
             'code' => 200,
             'data' => $data
         );

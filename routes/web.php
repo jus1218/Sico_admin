@@ -31,6 +31,8 @@ Route::prefix('api')->group( function () {
     //Route::put('/user/update',[UserController::class,'update']);
     Route::post('/user/login',[UserController::class,'login']);
     Route::get('/user/getidentity',[UserController::class,'getIdentity']);
+    Route::post('/user/upload',[UserController::class,'uploadImage']);
+    Route::get('/user/getimage/{filename}',[UserController::class,'getImage']);
     //RUTAS AUTOMATICAS RESTful
     Route::resource('/user', UserController::class,['except'=>['create','edit']]);
     Route::resource('/condomino', CondominoController::class,['except'=>['create','edit']]);

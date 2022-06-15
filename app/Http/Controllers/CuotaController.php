@@ -23,11 +23,10 @@ class CuotaController extends Controller
 
     //index -> Devolver todos los elementos << GET >>
     public function index(){
-        var_dump("Mostrar todo");
        // $data = Cuota::with('condomino')->get();//Es mejor que el all() porque te trae las relaciones
        $data = Cuota::all()->load('condomino');
         $response = array(
-            'status'=>'sucess',
+            'status'=>'success',
             'code' => 200,
             'data' => $data
         );
@@ -40,7 +39,7 @@ class CuotaController extends Controller
             );
         }
 
-        return response()->json($response,200);//devolvemos el arreglo y el code 200(Consulta exitosa)
+        return response()->json($response,$response['code']);//devolvemos el arreglo y el code 200(Consulta exitosa)
     }
 
     //store -> agrega o guarda un elemento << POST >>
